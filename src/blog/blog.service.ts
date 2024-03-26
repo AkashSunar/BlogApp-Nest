@@ -16,7 +16,7 @@ export class BlogService {
 
   async findOne(id: number) {
     const blog = await this.prisma.blog.findUnique({
-      where: { id: Number(id) },
+      where: { id:Number(id) },
     });
     return { msg: 'blog found', data: blog };
   }

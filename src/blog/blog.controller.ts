@@ -13,7 +13,6 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -48,6 +47,7 @@ export class BlogController {
 
   @Patch(':id')
   @ApiOkResponse({ type: BlogEntity })
+  @ApiOperation({ summary: 'Update the particular blog' })
   update(@Param('id') id: number, @Body() updateBlogDto: UpdateBlogDto) {
     return this.blogService.update(id, updateBlogDto);
   }
