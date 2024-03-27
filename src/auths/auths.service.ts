@@ -4,7 +4,8 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BcryptPassword } from 'src/utils/bcrypt';
 import { OtpService } from 'src/utils/otp';
-import { mailer } from 'src/utils/mailer';
+import { MailService } from 'src/utils/mailer';
+// import { mailer } from 'src/utils/mailer';
 
 @Injectable()
 export class AuthsService {
@@ -12,6 +13,7 @@ export class AuthsService {
     private prisma: PrismaService,
     private bcrypt: BcryptPassword,
     private generateOtp: OtpService,
+    private sendMail: MailService,
   ) {}
   async create(signUpPayload: CreateUserDto) {
     const { name, username, email, image } = signUpPayload;
@@ -29,7 +31,8 @@ export class AuthsService {
     await this.prisma.auth.create({
       data: authUser,
     });
-    await mailer(newUser.email, +generatedOTP);
+    // await mailer(newUser.email, +generatedOTP);
+    await this.sendMail.mailer(newUser.email,+generatedOTP)
     return this.prisma.user.create({ data: newUser });
   }
 
