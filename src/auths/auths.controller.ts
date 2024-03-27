@@ -22,14 +22,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { AuthEntity } from './entities/auth.entity';
 
 @Controller('auths')
 @ApiTags('Auth')
 export class AuthsController {
-  constructor(
-    private readonly authsService: AuthsService,
-    // private readonly userService: UsersService,
-  ) {}
+  constructor(private readonly authsService: AuthsService) {}
 
   @Post('signup')
   @ApiCreatedResponse({ type: UserEntity })
@@ -62,6 +61,18 @@ export class AuthsController {
     // const signedUpUser=await this.authsService.create()
     return this.authsService.create(createUserDto);
   }
+
+  @Post("verifyUser")
+  @ApiOperation({ summary: 'User verify' })
+  @ApiResponse({
+    status: 200,
+    description: 'verification of user',
+    type: [AuthEntity],
+  })
+  async verify(@Body() createAuthDto: CreateAuthDto, @Request() req: any) {
+    return this.authsService.verifyUser(createAuthDto);
+  }
+
 
   @Get()
   findAll() {

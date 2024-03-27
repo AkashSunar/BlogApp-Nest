@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     BlogModule,
     UsersModule,
     AuthsModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot(), // allows you to load environment variables and define a centralized configuration service that can be injected and used throughout your application.
   ],
   controllers: [AppController],
   providers: [AppService],

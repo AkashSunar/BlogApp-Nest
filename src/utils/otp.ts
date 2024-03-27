@@ -1,5 +1,5 @@
 import { totp } from 'otplib';
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'; // load and access environment variables
 
 @Injectable()
 export class OtpService {
@@ -9,6 +9,7 @@ export class OtpService {
   }
   verifyOtp(otpToken: string) {
     totp.options = { digits: 6, step: 300 };
+    // console.log(totp.check(otpToken, process.env.OTP_SECRET), 'from otp');
     return totp.check(otpToken, process.env.OTP_SECRET);
   }
 }

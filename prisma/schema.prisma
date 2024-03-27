@@ -39,6 +39,6 @@ enum Role{
 }
 model Auth{
   id Int @id @default(autoincrement())
-  email String
+  email String @unique
   otpToken Int
 }
