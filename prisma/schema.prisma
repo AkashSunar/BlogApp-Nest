@@ -37,3 +37,8 @@ enum Role{
   USER
   ADMIN
 }
+model Auth{
+  id Int @id @default(autoincrement())
+  email String
+  otpToken Int
+}

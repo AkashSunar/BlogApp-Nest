@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { BcryptPassword } from 'utils/bcrypt';
+import { BcryptPassword } from 'src/utils/bcrypt';
 import { Prisma } from '@prisma/client';
 import { Multer } from 'multer';
 
@@ -17,6 +17,7 @@ export class UsersService {
   ): Promise<Prisma.UserCreateInput> {
     const { name, username, email, image } = signUpPayload;
     const passwordHash = await this.bcrypt.hashPassword(signUpPayload.password);
+    // console.log()
     const newUser = {
       name,
       email,
@@ -37,10 +38,9 @@ export class UsersService {
   }
 
   async getaUser(id: number) {
-    return  await this.prisma.user.findUnique({
+    return await this.prisma.user.findUnique({
       where: { id: Number(id) },
     });
-  
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
