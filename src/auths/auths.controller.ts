@@ -22,7 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, UserVerifyDto } from './dto/create-auth.dto';
 import { AuthEntity } from './entities/auth.entity';
 
 @Controller('auths')
@@ -62,17 +62,28 @@ export class AuthsController {
     return this.authsService.create(createUserDto);
   }
 
-  @Post("verifyUser")
+  @Post('verifyUser')
   @ApiOperation({ summary: 'User verify' })
   @ApiResponse({
     status: 200,
     description: 'verification of user',
     type: [AuthEntity],
   })
-  async verify(@Body() createAuthDto: CreateAuthDto, @Request() req: any) {
+  async verify(@Body() createAuthDto: UserVerifyDto, @Request() req: any) {
     return this.authsService.verifyUser(createAuthDto);
   }
 
+  @Post('login')
+  @ApiOperation({ summary: 'User Login' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login of user',
+    type: [AuthEntity],
+  })
+  async login(@Body() loginAuthDto: CreateAuthDto, @Request() req: any) {
+    console.log(loginAuthDto);
+    return this.authsService.login(loginAuthDto);
+  }
 
   @Get()
   findAll() {

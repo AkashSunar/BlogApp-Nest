@@ -6,6 +6,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersService } from 'src/users/users.service';
 import { OtpService } from 'src/utils/otp';
 import { MailService } from 'src/utils/mailer';
+import { JwtService } from 'src/utils/jwt';
 
 @Module({
   controllers: [AuthsController],
@@ -15,6 +16,7 @@ import { MailService } from 'src/utils/mailer';
     UsersService,
     OtpService,
     MailService,
+    JwtService,
   ],
   imports: [PrismaModule],
 })

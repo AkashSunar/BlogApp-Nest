@@ -11,17 +11,23 @@ export class CreateUserDto {
   @IsOptional()
   image: string;
   @IsString()
+  @IsOptional()
   role: $Enums.Role;
   @IsInt()
+  @IsOptional()
   created_by: number;
   @IsInt()
+  @IsOptional()
   updated_by: number;
   @IsString()
   password: string;
   @IsBoolean()
+  @IsOptional()
   isEmailVerified: boolean;
   @IsBoolean()
+  @IsOptional()
   isActive: boolean;
   @IsBoolean()
+  @IsOptional()
   isArchive: boolean;
 }
