@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { BcryptPassword } from 'src/utils/bcrypt';
@@ -173,21 +172,5 @@ export class AuthsService {
       data: { passwordHash: await this.bcrypt.hashPassword(newPassword) },
     });
     return true;
-  }
-
-  findAll() {
-    return `This action returns all auths`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
   }
 }

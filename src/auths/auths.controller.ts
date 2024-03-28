@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthsService } from './auths.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -97,7 +99,7 @@ export class AuthsController {
     type: [AuthEntity],
   })
   async forgetPasswordToken(@Body() forgetPasswordPayload: ForgetPasswordDto) {
-    return this.authsService.forgetPasswordToken(forgetPasswordPayload);
+    return await this.authsService.forgetPasswordToken(forgetPasswordPayload);
   }
 
   @Post('CPtoken')
@@ -108,7 +110,18 @@ export class AuthsController {
     type: [AuthEntity],
   })
   async changePasswordToken(@Body() changePasswordPayload: ForgetPasswordDto) {
-    return this.authsService.changePasswordToken(changePasswordPayload);
+    try {
+      return await this.authsService.changePasswordToken(changePasswordPayload);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'This error is related to auth creation',
+        },
+        HttpStatus.BAD_REQUEST,
+        { cause: error },
+      );
+    }
   }
 
   @Post('forgetPassword')
