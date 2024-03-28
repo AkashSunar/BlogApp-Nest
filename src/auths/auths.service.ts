@@ -5,7 +5,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { BcryptPassword } from 'src/utils/bcrypt';
 import { OtpService } from 'src/utils/otp';
 import { MailService } from 'src/utils/mailer';
-import { CreateAuthDto, UserVerifyDto } from './dto/create-auth.dto';
+import {
+  CreateAuthDto,
+  UserVerifyDto,
+  LoginDto,
+  LoginReturnDto,
+  ForgetPasswordDto,
+  ChangePasswordDto,
+} from './dto/create-auth.dto';
 import { JwtService } from 'src/utils/jwt';
 
 @Injectable()
@@ -39,7 +46,7 @@ export class AuthsService {
     return this.prisma.user.create({ data: newUser });
   }
 
-  async verifyUser(userAuth: UserVerifyDto) {
+  async verifyUser(userAuth: UserVerifyDto): Promise<Boolean> {
     const { email, otpToken } = userAuth;
     const auth = await this.prisma.auth.findUnique({ where: { email: email } });
     if (!auth)
@@ -60,7 +67,7 @@ export class AuthsService {
     return true;
   }
 
-  async login(loginPayload: CreateAuthDto) {
+  async login(loginPayload: LoginDto): Promise<LoginReturnDto> {
     const { email, password } = loginPayload;
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user)
@@ -84,7 +91,88 @@ export class AuthsService {
       );
     const jwtPayload = { email: user.email, id: user.id };
     const accessToken = this.jwtService.generateJwt(jwtPayload);
-    return { email: user.email, accessToken };
+    const refreshToken = this.jwtService.refreshJwt(jwtPayload);
+    return { email: user.email, accessToken, refreshToken };
+  }
+
+  async forgetPasswordToken(
+    forgetPasswordPayload: ForgetPasswordDto,
+  ): Promise<Boolean> {
+    const { email } = forgetPasswordPayload;
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user)
+      throw new HttpException('User is not available', HttpStatus.BAD_REQUEST);
+    const otpToken = Number(this.otpService.generateOtp());
+    const newUser = { email, otpToken };
+    await this.prisma.auth.create({ data: newUser });
+    await this.sendMail.mailer(email, otpToken);
+    return true;
+  }
+
+  async changePasswordToken(
+    changePasswordPayload: ForgetPasswordDto,
+  ): Promise<Boolean> {
+    const { email } = changePasswordPayload;
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user)
+      throw new HttpException('User is not available', HttpStatus.BAD_REQUEST);
+    const otpToken = Number(this.otpService.generateOtp());
+    const newUser = { email, otpToken };
+    await this.prisma.auth.create({ data: newUser });
+    await this.sendMail.mailer(email, otpToken);
+    return true;
+  }
+
+  async forgetPassword(
+    forgetPasswordPayload: ForgetPasswordDto,
+  ): Promise<Boolean> {
+    const { email, otpToken, password } = forgetPasswordPayload;
+    const authUser = await this.prisma.auth.findUnique({ where: { email } });
+    if (!authUser)
+      throw new HttpException('User is not available', HttpStatus.BAD_REQUEST);
+    const IsValidToken = this.otpService.verifyOtp(String(otpToken));
+    if (!IsValidToken)
+      throw new HttpException('Token is expired', HttpStatus.BAD_REQUEST);
+    const emailValid = authUser.otpToken === otpToken;
+    if (!emailValid)
+      throw new HttpException('Token is mismatched', HttpStatus.BAD_REQUEST);
+    await this.prisma.user.update({
+      where: { email },
+      data: { passwordHash: await this.bcrypt.hashPassword(password) },
+    });
+    return true;
+  }
+
+  async changePassword(
+    changePasswordPayload: ChangePasswordDto,
+  ): Promise<Boolean> {
+    const { email, otpToken, oldPassword, newPassword } = changePasswordPayload;
+    const authUser = await this.prisma.auth.findUnique({ where: { email } });
+    if (!authUser)
+      throw new HttpException('User is not available', HttpStatus.BAD_REQUEST);
+    const IsValidToken = this.otpService.verifyOtp(String(otpToken));
+    if (!IsValidToken)
+      throw new HttpException('Token is expired', HttpStatus.BAD_REQUEST);
+    const emailValid = authUser.otpToken === otpToken;
+    if (!emailValid)
+      throw new HttpException('Token is mismatched', HttpStatus.BAD_REQUEST);
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user)
+      throw new HttpException('User is not available', HttpStatus.BAD_REQUEST);
+    const passwordCorrect = await this.bcrypt.comparePassword(
+      oldPassword,
+      user.passwordHash,
+    );
+    if (!passwordCorrect)
+      throw new HttpException(
+        'Old password you provided is in correct',
+        HttpStatus.BAD_REQUEST,
+      );
+    await this.prisma.user.update({
+      where: { email },
+      data: { passwordHash: await this.bcrypt.hashPassword(newPassword) },
+    });
+    return true;
   }
 
   findAll() {

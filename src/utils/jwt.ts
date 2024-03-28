@@ -8,4 +8,9 @@ export class JwtService {
       expiresIn: '10m',
     });
   }
+  refreshJwt(payload: any) {
+    return Jwt.sign({ data: payload }, process.env.REFRESH_TOKEN_SECRET || '', {
+      expiresIn: '1w',
+    });
+  }
 }

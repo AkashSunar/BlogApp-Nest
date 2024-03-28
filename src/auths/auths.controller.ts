@@ -22,7 +22,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { CreateAuthDto, UserVerifyDto } from './dto/create-auth.dto';
+import {
+  UserVerifyDto,
+  LoginDto,
+  ForgetPasswordDto,
+  ChangePasswordDto,
+} from './dto/create-auth.dto';
 import { AuthEntity } from './entities/auth.entity';
 
 @Controller('auths')
@@ -80,28 +85,51 @@ export class AuthsController {
     description: 'Login of user',
     type: [AuthEntity],
   })
-  async login(@Body() loginAuthDto: CreateAuthDto, @Request() req: any) {
-    console.log(loginAuthDto);
+  async login(@Body() loginAuthDto: LoginDto, @Request() req: any) {
     return this.authsService.login(loginAuthDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authsService.findAll();
+  @Post('FPtoken')
+  @ApiOperation({ summary: 'Forget Password Token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Forget Password',
+    type: [AuthEntity],
+  })
+  async forgetPasswordToken(@Body() forgetPasswordPayload: ForgetPasswordDto) {
+    return this.authsService.forgetPasswordToken(forgetPasswordPayload);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authsService.findOne(+id);
+  @Post('CPtoken')
+  @ApiOperation({ summary: 'Change Password Token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Change Password',
+    type: [AuthEntity],
+  })
+  async changePasswordToken(@Body() changePasswordPayload: ForgetPasswordDto) {
+    return this.authsService.changePasswordToken(changePasswordPayload);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authsService.update(+id, updateAuthDto);
+  @Post('forgetPassword')
+  @ApiOperation({ summary: 'Forgot Password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Forgot Password',
+    type: [AuthEntity],
+  })
+  async forgetPassword(@Body() forgetPasswordPayload: ForgetPasswordDto) {
+    return this.authsService.forgetPassword(forgetPasswordPayload);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authsService.remove(+id);
+  @Post('changePassword')
+  @ApiOperation({ summary: 'Change Password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Change Password',
+    type: [AuthEntity],
+  })
+  async changePassword(@Body() changePasswordPayload: ChangePasswordDto) {
+    return this.authsService.changePassword(changePasswordPayload);
   }
 }
