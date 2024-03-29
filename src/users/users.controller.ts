@@ -30,17 +30,17 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enum/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
 
-@ApiBearerAuth('access-token')
-@UseGuards(RolesGuard)
 @Controller('users')
+@UseGuards(RolesGuard)
 @ApiTags('User')
+@ApiBearerAuth('access-token')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('signup')
   @Roles(Role.Admin)
   @ApiCreatedResponse({ type: UserEntity })
-  @ApiOperation({ summary: 'Create a user' })
+  @ApiOperation({ summary: 'Create a user by admin' })
   @ApiResponse({
     status: 200,
     description: 'The found record',
@@ -73,23 +73,63 @@ export class UsersController {
   }
 
   @Get('getUsers')
+  @Roles(Role.Admin)
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOperation({ summary: 'Get all the users' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: [UserEntity],
+  })
   async findAll() {
     return await this.usersService.getAllUsers();
   }
 
   @Get(':id')
+  @Roles(Role.Admin)
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOperation({ summary: 'Get a particular user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: [UserEntity],
+  })
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.getaUser(+id);
     return { msg: 'user found', data: user };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('block/:id')
+  @Roles(Role.Admin)
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOperation({ summary: 'Block a particular user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: [UserEntity],
+  })
+  async blockUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    await this.usersService.block(+id, updateUserDto);
+    return { msg: 'user is blocked' };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Delete('delete/:id')
+  @Roles(Role.Admin)
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOperation({ summary: 'Delete a particular user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: [UserEntity],
+  })
+  async deleteUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    await this.usersService.delete(+id, updateUserDto);
+    return { msg: 'User is deleted' };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -33,7 +33,6 @@ export class UsersService {
 
   async getAllUsers() {
     return await this.prisma.user.findMany({});
-    // return `This action returns all users`;
   }
 
   async getaUser(id: number) {
@@ -42,11 +41,34 @@ export class UsersService {
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async block(id: number, blockPayload: any) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user)
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if (!user.isActive)
+      throw new HttpException(
+        'User is already blocked',
+        HttpStatus.BAD_REQUEST,
+      );
+    return await this.prisma.user.update({
+      where: { id },
+      data: blockPayload,
+    });
+  }
+  
+  async delete(id: number, deletePayLoad: any) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user)
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    if (user.isArchive)
+      throw new HttpException(
+        'User is already deleted',
+        HttpStatus.BAD_REQUEST,
+      );
+    return await this.prisma.user.update({
+      where: { id },
+      data: deletePayLoad,
+    });
   }
 }

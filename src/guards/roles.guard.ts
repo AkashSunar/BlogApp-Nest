@@ -36,9 +36,11 @@ export class RolesGuard implements CanActivate {
     const userData = this.jwtService.verifyJwt(token) as JwtPayload;
     const { email } = userData.data;
     const user = await this.prisma.user.findUnique({ where: { email } });
-      if (!user) throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
+    if (!user) throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
     requestBody.userId = user.id;
     const isValidRole = requiredRoles.some((role) => user.role === role);
+    if (!isValidRole)
+      throw new HttpException('Role does not match', HttpStatus.FORBIDDEN);
     return isValidRole;
   }
 }
