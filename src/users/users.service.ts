@@ -15,9 +15,8 @@ export class UsersService {
   async createUser(
     signUpPayload: CreateUserDto,
   ): Promise<Prisma.UserCreateInput> {
-    const { name, username, email, image } = signUpPayload;
+    const { name, username, email, image, created_by } = signUpPayload;
     const passwordHash = await this.bcrypt.hashPassword(signUpPayload.password);
-    // console.log()
     const newUser = {
       name,
       email,
@@ -27,9 +26,9 @@ export class UsersService {
       isArchive: false,
       isEmailVerified: true,
       passwordHash,
+      created_by,
     };
     return await this.prisma.user.create({ data: newUser });
-    // return 'This action adds a new user';
   }
 
   async getAllUsers() {

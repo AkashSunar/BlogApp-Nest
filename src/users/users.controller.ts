@@ -9,6 +9,7 @@ import {
   UploadedFile,
   Request,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,17 +20,25 @@ import {
   ApiResponse,
   ApiOperation,
   ApiTags,
+  ApiBearerAuth,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserEntity } from './entities/user.entity';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enum/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 
+@ApiBearerAuth('access-token')
+@UseGuards(RolesGuard)
 @Controller('users')
 @ApiTags('User')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('signup')
+  @Roles(Role.Admin)
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: 'Create a user' })
   @ApiResponse({
@@ -47,6 +56,7 @@ export class UsersController {
       }),
     }),
   )
+  @ApiConsumes('multipart/form-data')
   async createUser(
     @UploadedFile()
     file: Express.Multer.File,
@@ -57,9 +67,9 @@ export class UsersController {
       const imageName = Date.now() + '-' + file.originalname;
       createUserDto.image = imageName;
     }
+    createUserDto.created_by = req.userId;
     const createdUser = await this.usersService.createUser(createUserDto);
-    // console.log(createdUser, 'checking created user');
-    return { msg: 'User Signedup successfully', data: createdUser };
+    return { msg: 'User created by admin', data: createdUser };
   }
 
   @Get('getUsers')
