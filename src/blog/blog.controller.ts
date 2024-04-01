@@ -24,6 +24,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enum/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { BlogEntity } from './entities/blog.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('blogs')
 @UseGuards(RolesGuard)
@@ -46,12 +47,18 @@ export class BlogController {
     return this.blogService.create(createBlogDto);
   }
 
-  @Get()
+  @Get('get-blogs')
+  // @UseGuards(AuthGuard)
+  @ApiCreatedResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'List of blogs' })
-  @ApiOkResponse({ type: BlogEntity, isArray: true })
+  @ApiResponse({
+    status: 201,
+    description: 'The found record',
+    type: [BlogEntity],
+  })
   // @ApiResponse({ status: 200, description: 'List of all blogs' })
-  findAll() {
-    return this.blogService.findAll();
+  findAll(@Request() req: any) {
+    return this.blogService.findAll(req);
   }
 
   @Get(':id')
@@ -68,10 +75,10 @@ export class BlogController {
     return this.blogService.update(id, updateBlogDto);
   }
 
-  @Delete(':id')
+  @Delete('delete-blog/:id')
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Delete a particular blog' })
-  remove(@Param('id') id: number) {
-    return this.blogService.remove(id);
+  remove(@Param('id') id: number, @Request() req: any) {
+    return this.blogService.remove(req, id);
   }
 }
