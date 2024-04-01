@@ -78,7 +78,7 @@ export class BlogController {
   @Delete('delete-blog/:id')
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Delete a particular blog' })
-  remove(@Param('id') id: number, @Request() req: any) {
-    return this.blogService.remove(req, id);
+  remove(@Param('id') blogId: number, @Request() req: any) {
+    return this.blogService.remove(blogId,req);
   }
 }

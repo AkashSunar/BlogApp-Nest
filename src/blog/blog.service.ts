@@ -5,10 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TokenExtractor } from 'src/utils/token.extractor';
 import { JwtService } from 'src/utils/jwt';
 import { JwtPayload } from 'jsonwebtoken';
-import { type, userInfo } from 'os';
 import { BlogEntity } from './entities/blog.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
-// import { request } from 'http';
 @Injectable()
 export class BlogService {
   constructor(
@@ -45,14 +43,12 @@ export class BlogService {
     return { msg: 'Blog updated successfully', data: updatedBlog };
   }
 
-  async remove(req, id: number) {
+  async remove(blogId: number,req) {
     const token = this.tokenExtractor.extractToken(req);
     const userData = this.jwtService.verifyJwt(token) as JwtPayload;
     const creatorId = userData.data.id;
-    // console.log(creatorId, 'user id from token');
-    // console.log(typeof id), 'checking from blogservice';
     const blogToBedeleted = await this.prisma.blog.findUnique({
-      where: { id: Number(id) },
+      where: { id: Number(blogId) },
     });
     if (!blogToBedeleted)
       throw new HttpException(
@@ -64,7 +60,7 @@ export class BlogService {
         'This Blog is not created by the user you provider',
         HttpStatus.BAD_REQUEST,
       );
-    await this.prisma.blog.delete({ where: { id: Number(id) } });
+    await this.prisma.blog.delete({ where: { id: Number(blogId) } });
     return { msg: 'Deleted succesfully' };
   }
 }
