@@ -6,27 +6,43 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enum/role.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 import { BlogEntity } from './entities/blog.entity';
 
 @Controller('blogs')
+@UseGuards(RolesGuard)
 @ApiTags('Blog')
+@ApiBearerAuth('access-token')
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
-  @Post()
+  @Post('post-blog')
+  @Roles(Role.User)
   @ApiCreatedResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Create a blog' })
-  create(@Body() createBlogDto: CreateBlogDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'The found record',
+    type: [BlogEntity],
+  })
+  create(@Body() createBlogDto: CreateBlogDto, @Request() req: any) {
+    createBlogDto.userId = req.userId;
     return this.blogService.create(createBlogDto);
   }
 

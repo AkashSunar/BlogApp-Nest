@@ -19,7 +19,7 @@ Content-Type: application/json
 {
   "author":"Bablu Pandit"
 }
-
+  
 ### Get a particular blog
 GET http://localhost:3000/blogs/2
 

@@ -11,4 +11,6 @@ export class BlogEntity implements Blog {
   author: string;
   @ApiProperty()
   likes: number;
+  @ApiProperty()
+  userId:number
 }
