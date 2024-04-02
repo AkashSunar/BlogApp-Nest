@@ -6,7 +6,6 @@ import { TokenExtractor } from 'src/utils/token.extractor';
 import { JwtService } from 'src/utils/jwt';
 import { JwtPayload } from 'jsonwebtoken';
 import { BlogEntity } from './entities/blog.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
 @Injectable()
 export class BlogService {
   constructor(
@@ -19,31 +18,42 @@ export class BlogService {
     return { msg: 'Blog created successfully', data: createdBlog };
   }
 
-  findAll(req) {
+  async findAll(req) {
     const token = this.tokenExtractor.extractToken(req);
     const userData = this.jwtService.verifyJwt(token) as JwtPayload;
     const { id } = userData.data;
-    return this.prisma.blog.findMany({
-      where: { userId: id } as BlogEntity,
+    return await this.prisma.blog.findMany({
+      where: { userId: id },
     });
   }
 
-  async findOne(id: number) {
-    const blog = await this.prisma.blog.findUnique({
-      where: { id: Number(id) },
+  async update(blogId: number, updateBlogDto: UpdateBlogDto, req: any) {
+    const token = this.tokenExtractor.extractToken(req);
+    const userData = this.jwtService.verifyJwt(token) as JwtPayload;
+    const creatorId = userData.data.id;
+    const blogToBeUpdated = await this.prisma.blog.findUnique({
+      where: {
+        id: Number(blogId),
+      },
     });
-    return { msg: 'blog found', data: blog };
-  }
-
-  async update(id: number, updateBlogDto: UpdateBlogDto) {
+    if (!blogToBeUpdated)
+      throw new HttpException(
+        'Blog you want to update is not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    if (creatorId !== blogToBeUpdated.userId)
+      throw new HttpException(
+        'This Blog is not created by the user you provider',
+        HttpStatus.BAD_REQUEST,
+      );
     const updatedBlog = await this.prisma.blog.update({
-      where: { id: Number(id) },
+      where: { id: Number(blogId) },
       data: updateBlogDto,
     });
     return { msg: 'Blog updated successfully', data: updatedBlog };
   }
 
-  async remove(blogId: number,req) {
+  async remove(blogId: number, req) {
     const token = this.tokenExtractor.extractToken(req);
     const userData = this.jwtService.verifyJwt(token) as JwtPayload;
     const creatorId = userData.data.id;

@@ -13,11 +13,11 @@ Content-Type: application/json
 }
 
 ###Update a blog
-PATCH  http://localhost:3000/blogs/6
+PATCH  http://localhost:3000/blogs/9
 Content-Type: application/json
 
 {
-  "author":"Bablu Pandit"
+  "author":"Bablu "
 }
   
 ### Get a particular blog
