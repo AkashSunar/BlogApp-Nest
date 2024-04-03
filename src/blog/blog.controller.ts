@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Request,
-  Response,
   UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
@@ -25,6 +24,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enum/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { BlogEntity } from './entities/blog.entity';
+import { AuthsGuard } from 'src/guards/auths.guard';
 
 @Controller('blogs')
 @UseGuards(RolesGuard)
@@ -48,6 +48,7 @@ export class BlogController {
   }
 
   @Get('get-blogs')
+  @UseGuards(AuthsGuard)
   @ApiCreatedResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'List of blogs' })
   @ApiResponse({
@@ -55,31 +56,30 @@ export class BlogController {
     description: 'The found record',
     type: [BlogEntity],
   })
-  async findAll(@Request() req: any, @Response() res: any) {
-    const result = await this.blogService.findAll(req, res);
-    res.status(200).json({ data: result, msg: 'All blogs' });
+  async findAll(@Request() req: any) {
+    const createrId = req.userId;
+    const result = await this.blogService.findAll(createrId);
+    return { data: result, msg: 'All Blogs' };
   }
 
   @Patch('update-blog/:id')
+  @UseGuards(AuthsGuard)
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Update the particular blog' })
   update(
     @Param('id') blogId: number,
     @Body() updateBlogDto: UpdateBlogDto,
     @Request() req: any,
-    @Response() res: any,
   ) {
-    return this.blogService.update(blogId, updateBlogDto, req, res);
+    const creatorId = req.userId;
+    return this.blogService.update(blogId, updateBlogDto, creatorId);
   }
 
   @Delete('delete-blog/:id')
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Delete a particular blog' })
-  remove(
-    @Param('id') blogId: number,
-    @Request() req: any,
-    @Response() res: any,
-  ) {
-    return this.blogService.remove(blogId, req, res);
+  remove(@Param('id') blogId: number, @Request() req: any) {
+    const creatorId = req.userId;
+    return this.blogService.remove(blogId, creatorId);
   }
 }

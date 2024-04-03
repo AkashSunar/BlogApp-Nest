@@ -19,7 +19,9 @@ export class RolesGuard implements CanActivate {
     private jwtService: JwtService,
     private prisma: PrismaService,
   ) {}
+
   accessTokensecret = process.env.ACCESS_TOKEN_SECRET;
+  refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
@@ -35,7 +37,10 @@ export class RolesGuard implements CanActivate {
     const requestBody = context.switchToHttp().getRequest(); //to get access to request body
     const tokenArray = requestBody.headers.authorization.split(' ');
     const token = tokenArray[tokenArray.length - 1];
-    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
+    const userData = this.jwtService.verifyJwt(
+      token,
+      this.accessTokensecret,
+    ) as JwtPayload;
     const { email } = userData.data;
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);

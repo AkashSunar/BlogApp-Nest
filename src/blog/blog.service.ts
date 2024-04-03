@@ -2,17 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TokenExtractor } from 'src/utils/token.extractor';
-import { JwtService } from 'src/utils/jwt';
-import { JwtPayload } from 'jsonwebtoken';
-import { BlogEntity } from './entities/blog.entity';
+
 @Injectable()
 export class BlogService {
-  constructor(
-    private prisma: PrismaService,
-    private tokenExtractor: TokenExtractor,
-    private jwtService: JwtService,
-  ) {} // This allows you to use methods provided by PrismaService within BlogService.
+  constructor(private prisma: PrismaService) {} // This allows you to use methods provided by PrismaService within BlogService.
 
   accessTokensecret = process.env.ACCESS_TOKEN_SECRET;
   refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -21,25 +14,17 @@ export class BlogService {
     return { msg: 'Blog created successfully', data: createdBlog };
   }
 
-  async findAll(req, res) {
-    const token = this.tokenExtractor.extractToken(req, res);
-    // console.log(token,"from blog service")
-    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
-    const { id } = userData.data;
+  async findAll(createrId: number) {
     return await this.prisma.blog.findMany({
-      where: { userId: id },
+      where: { userId: createrId },
     });
   }
 
   async update(
     blogId: number,
     updateBlogDto: UpdateBlogDto,
-    req: any,
-    res: any,
+    creatorId: number,
   ) {
-    const token = this.tokenExtractor.extractToken(req, res);
-    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
-    const creatorId = userData.data.id;
     const blogToBeUpdated = await this.prisma.blog.findUnique({
       where: {
         id: Number(blogId),
@@ -62,10 +47,7 @@ export class BlogService {
     return { msg: 'Blog updated successfully', data: updatedBlog };
   }
 
-  async remove(blogId: number, req, res) {
-    const token = this.tokenExtractor.extractToken(req, res);
-    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
-    const creatorId = userData.data.id;
+  async remove(blogId: number, creatorId: number) {
     const blogToBedeleted = await this.prisma.blog.findUnique({
       where: { id: Number(blogId) },
     });

@@ -13,24 +13,23 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { AuthsService } from './auths.service';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import {
   ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserEntity } from 'src/users/entities/user.entity';
 import {
   UserVerifyDto,
   LoginDto,
   ForgetPasswordDto,
   ChangePasswordDto,
 } from './dto/create-auth.dto';
+import { AuthsService } from './auths.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { AuthEntity } from './entities/auth.entity';
 
 @Controller('auths')
@@ -90,15 +89,15 @@ export class AuthsController {
   })
   async login(
     @Body() loginAuthDto: LoginDto,
-    @Request() req: any,
     @Response() res: any,
   ) {
     const result = await this.authsService.login(loginAuthDto);
     const { refreshToken } = result;
     res.cookie('refreshToken', refreshToken);
     // return result;
-    return res.status(200).json({ data: result, msg: 'successfully logged in' });
-    
+    return res
+      .status(200)
+      .json({ data: result, msg: 'successfully logged in' });
   }
 
   @Post('FPtoken')
