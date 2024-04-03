@@ -9,6 +9,7 @@ import {
   UploadedFile,
   UseInterceptors,
   Request,
+  Response,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -87,8 +88,17 @@ export class AuthsController {
     description: 'Login of user',
     type: [AuthEntity],
   })
-  async login(@Body() loginAuthDto: LoginDto, @Request() req: any) {
-    return this.authsService.login(loginAuthDto);
+  async login(
+    @Body() loginAuthDto: LoginDto,
+    @Request() req: any,
+    @Response() res: any,
+  ) {
+    const result = await this.authsService.login(loginAuthDto);
+    const { refreshToken } = result;
+    res.cookie('refreshToken', refreshToken);
+    // return result;
+    return res.status(200).json({ data: result, msg: 'successfully logged in' });
+    
   }
 
   @Post('FPtoken')

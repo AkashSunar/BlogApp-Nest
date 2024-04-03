@@ -5,7 +5,6 @@ import { BcryptPassword } from 'src/utils/bcrypt';
 import { OtpService } from 'src/utils/otp';
 import { MailService } from 'src/utils/mailer';
 import {
-  CreateAuthDto,
   UserVerifyDto,
   LoginDto,
   LoginReturnDto,

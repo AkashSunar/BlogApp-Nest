@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Request,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
@@ -54,8 +55,9 @@ export class BlogController {
     description: 'The found record',
     type: [BlogEntity],
   })
-  findAll(@Request() req: any) {
-    return this.blogService.findAll(req);
+  async findAll(@Request() req: any, @Response() res: any) {
+    const result = await this.blogService.findAll(req, res);
+    res.status(200).json({ data: result, msg: 'All blogs' });
   }
 
   @Patch('update-blog/:id')
@@ -65,14 +67,19 @@ export class BlogController {
     @Param('id') blogId: number,
     @Body() updateBlogDto: UpdateBlogDto,
     @Request() req: any,
+    @Response() res: any,
   ) {
-    return this.blogService.update(blogId, updateBlogDto, req);
+    return this.blogService.update(blogId, updateBlogDto, req, res);
   }
 
   @Delete('delete-blog/:id')
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Delete a particular blog' })
-  remove(@Param('id') blogId: number, @Request() req: any) {
-    return this.blogService.remove(blogId, req);
+  remove(
+    @Param('id') blogId: number,
+    @Request() req: any,
+    @Response() res: any,
+  ) {
+    return this.blogService.remove(blogId, req, res);
   }
 }

@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 export class JwtService {
   generateJwt(payload: any) {
     return Jwt.sign({ data: payload }, process.env.ACCESS_TOKEN_SECRET || '', {
-      expiresIn: '30m',
+      expiresIn: '5m',
     });
   }
   refreshJwt(payload: any) {
@@ -13,7 +13,7 @@ export class JwtService {
       expiresIn: '1w',
     });
   }
-  verifyJwt(token: any) {
-    return Jwt.verify(token || '', process.env.ACCESS_TOKEN_SECRET || '');
+  verifyJwt(token: any,tokenSecret:string) {
+    return Jwt.verify(token || '',tokenSecret);
   }
 }

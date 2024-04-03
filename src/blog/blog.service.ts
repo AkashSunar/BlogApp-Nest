@@ -13,23 +13,32 @@ export class BlogService {
     private tokenExtractor: TokenExtractor,
     private jwtService: JwtService,
   ) {} // This allows you to use methods provided by PrismaService within BlogService.
+
+  accessTokensecret = process.env.ACCESS_TOKEN_SECRET;
+  refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
   async create(createBlogDto: CreateBlogDto) {
     const createdBlog = await this.prisma.blog.create({ data: createBlogDto });
     return { msg: 'Blog created successfully', data: createdBlog };
   }
 
-  async findAll(req) {
-    const token = this.tokenExtractor.extractToken(req);
-    const userData = this.jwtService.verifyJwt(token) as JwtPayload;
+  async findAll(req, res) {
+    const token = this.tokenExtractor.extractToken(req, res);
+    // console.log(token,"from blog service")
+    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
     const { id } = userData.data;
     return await this.prisma.blog.findMany({
       where: { userId: id },
     });
   }
 
-  async update(blogId: number, updateBlogDto: UpdateBlogDto, req: any) {
-    const token = this.tokenExtractor.extractToken(req);
-    const userData = this.jwtService.verifyJwt(token) as JwtPayload;
+  async update(
+    blogId: number,
+    updateBlogDto: UpdateBlogDto,
+    req: any,
+    res: any,
+  ) {
+    const token = this.tokenExtractor.extractToken(req, res);
+    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
     const creatorId = userData.data.id;
     const blogToBeUpdated = await this.prisma.blog.findUnique({
       where: {
@@ -53,9 +62,9 @@ export class BlogService {
     return { msg: 'Blog updated successfully', data: updatedBlog };
   }
 
-  async remove(blogId: number, req) {
-    const token = this.tokenExtractor.extractToken(req);
-    const userData = this.jwtService.verifyJwt(token) as JwtPayload;
+  async remove(blogId: number, req, res) {
+    const token = this.tokenExtractor.extractToken(req, res);
+    const userData = this.jwtService.verifyJwt(token,this.accessTokensecret) as JwtPayload;
     const creatorId = userData.data.id;
     const blogToBedeleted = await this.prisma.blog.findUnique({
       where: { id: Number(blogId) },
