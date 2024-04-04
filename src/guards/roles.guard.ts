@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtPayload } from 'jsonwebtoken';
-import { ROLES_KEY } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from 'src/utils/jwt';
+import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Role } from '../enum/role.enum';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from '../../src/utils/jwt';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

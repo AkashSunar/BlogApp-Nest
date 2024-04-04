@@ -1,5 +1,5 @@
 import { CanActivate, Injectable, ExecutionContext } from '@nestjs/common';
-import { JwtService } from 'src/utils/jwt';
+import { JwtService } from '../utils/jwt';
 import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()

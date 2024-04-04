@@ -25,9 +25,9 @@ import {
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserEntity } from './entities/user.entity';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
-import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enum/role.enum';
+import { RolesGuard } from '../guards/roles.guard';
 
 @Controller('users')
 @UseGuards(RolesGuard)

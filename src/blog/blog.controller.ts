@@ -20,11 +20,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enum/role.enum';
-import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enum/role.enum';
+import { RolesGuard } from '../guards/roles.guard';
 import { BlogEntity } from './entities/blog.entity';
-import { AuthsGuard } from 'src/guards/auths.guard';
+import { AuthsGuard } from '../guards/auths.guard';
 
 @Controller('blogs')
 @UseGuards(RolesGuard)

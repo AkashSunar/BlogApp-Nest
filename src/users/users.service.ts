@@ -1,10 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { BcryptPassword } from 'src/utils/bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { BcryptPassword } from '../utils/bcrypt';
 import { Prisma } from '@prisma/client';
-import { Multer } from 'multer';
 
 @Injectable()
 export class UsersService {
