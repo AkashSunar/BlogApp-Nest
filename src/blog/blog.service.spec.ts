@@ -2,6 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BlogService } from './blog.service';
 import { PrismaService } from '../prisma/prisma.service';
 
+const blogData = {
+  title: 'The Blog by user1',
+  content: 'A beautiful blog createt by robert in the memory of his beloved',
+  author: 'Akash Babu',
+  likes: 1000,
+};
+
 const blogs = [
   {
     id: 14,
@@ -49,9 +56,10 @@ describe('BlogService', () => {
   describe('Create a Blog', () => {
     it(' should create a blog and save it', async () => {
       jest.spyOn(prisma.blog, 'create').mockResolvedValue(blogs[0]);
+      // const createdBlog = await service.create(blogData);
       const createdBlog = await prisma.blog.create({ data: blogs[0] });
       expect(createdBlog).toEqual(blogs[0]);
-      expect(prisma.blog.create).toHaveBeenCalledWith({ data: blogs[0] });
+      expect(prisma.blog.create).toHaveBeenCalledWith({ data: blogData });
     });
   });
 
