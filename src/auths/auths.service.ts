@@ -1,9 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { BcryptPassword } from 'src/utils/bcrypt';
-import { OtpService } from 'src/utils/otp';
-import { MailService } from 'src/utils/mailer';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { BcryptPassword } from '../utils/bcrypt';
+import { OtpService } from '../utils/otp';
+import { MailService } from '../utils/mailer';
 import {
   UserVerifyDto,
   LoginDto,
@@ -11,7 +11,7 @@ import {
   ForgetPasswordDto,
   ChangePasswordDto,
 } from './dto/create-auth.dto';
-import { JwtService } from 'src/utils/jwt';
+import { JwtService } from '../utils/jwt';
 
 @Injectable()
 export class AuthsService {
@@ -84,7 +84,7 @@ export class AuthsService {
 
     if (!passwordCorrect)
       throw new HttpException(
-        'Email or Password is incorrectr',
+        'Email or Password is incorrect',
         HttpStatus.BAD_REQUEST,
       );
     const jwtPayload = { email: user.email, id: user.id };
@@ -163,7 +163,7 @@ export class AuthsService {
     );
     if (!passwordCorrect)
       throw new HttpException(
-        'Old password you provided is in correct',
+        'Old password you provided is incorrect',
         HttpStatus.BAD_REQUEST,
       );
     await this.prisma.user.update({

@@ -31,3 +31,8 @@ export class CreateUserDto {
   @IsOptional()
   isArchive: boolean;
 }
+
+export class EmailVerifyDto {
+  @IsBoolean()
+  isEmailVerified: boolean;
+}
