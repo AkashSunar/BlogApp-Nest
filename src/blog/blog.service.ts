@@ -37,7 +37,7 @@ export class BlogService {
       );
     if (creatorId !== blogToBeUpdated.userId)
       throw new HttpException(
-        'This Blog is not created by the user you provider',
+        'This Blog is not created by the user you provided',
         HttpStatus.BAD_REQUEST,
       );
     const updatedBlog = await this.prisma.blog.update({
@@ -58,7 +58,7 @@ export class BlogService {
       );
     if (creatorId !== blogToBedeleted.userId)
       throw new HttpException(
-        'This Blog is not created by the user you provider',
+        'This Blog is not created by the user you provided',
         HttpStatus.BAD_REQUEST,
       );
     await this.prisma.blog.delete({ where: { id: Number(blogId) } });
