@@ -12,7 +12,6 @@ import {
   ChangePasswordDto,
   ForgetPasswordDto,
 } from './dto/create-auth.dto';
-import { PrismaClient } from '@prisma/client';
 
 const userData = {
   name: 'Akash Sunar',
@@ -138,7 +137,7 @@ describe('AuthsService', () => {
       jest
         .spyOn(BcryptPassword.prototype, 'hashPassword')
         .mockResolvedValue('hashedPassword');
-      jest.spyOn(mailService, 'mailer').mockResolvedValue(true);
+      jest.spyOn(MailService.prototype, 'mailer').mockResolvedValue(true);
       jest.spyOn(OtpService.prototype, 'generateOtp').mockReturnValue('123456');
       jest.spyOn(prisma.user, 'create').mockResolvedValue(signedupUser);
       jest.spyOn(prisma.auth, 'create').mockResolvedValue(authUser as AuthDto);
@@ -159,7 +158,7 @@ describe('AuthsService', () => {
       jest.spyOn(OtpService.prototype, 'verifyOtp').mockReturnValue(true);
       jest
         .spyOn(prisma.user, 'update')
-        .mockResolvedValue({ isEmailVerified: true }as any);
+        .mockResolvedValue({ isEmailVerified: true } as any);
       const result = await service.verifyUser(authUser);
       expect(result).toBe(true);
       expect(otpService.verifyOtp).toHaveBeenCalledWith(
@@ -306,7 +305,7 @@ describe('AuthsService', () => {
     it('should generate forgotPassword token', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(loggedinUser);
       jest.spyOn(OtpService.prototype, 'generateOtp').mockReturnValue('123456');
-      jest.spyOn(mailService, 'mailer').mockResolvedValue(true);
+      jest.spyOn(MailService.prototype, 'mailer').mockResolvedValue(true);
       jest.spyOn(prisma.auth, 'create').mockResolvedValue(authUser as AuthDto);
       const result = await service.forgetPasswordToken(
         loginData as ForgetPasswordDto,
@@ -416,7 +415,7 @@ describe('AuthsService', () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(loggedinUser);
       jest.spyOn(OtpService.prototype, 'generateOtp').mockReturnValue('123456');
       jest.spyOn(prisma.auth, 'create').mockResolvedValue(authUser as AuthDto);
-      jest.spyOn(mailService, 'mailer').mockResolvedValue(true);
+      jest.spyOn(MailService.prototype, 'mailer').mockResolvedValue(true);
       const result = await service.changePasswordToken(
         loginData as ForgetPasswordDto,
       );
