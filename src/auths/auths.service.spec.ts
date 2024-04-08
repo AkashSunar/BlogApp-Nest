@@ -6,12 +6,13 @@ import { JwtService } from '../utils/jwt';
 import { OtpService } from '../utils/otp';
 import { MailService } from '../utils/mailer';
 import { Role } from '../enum/role.enum';
-import { CreateUserDto, EmailVerifyDto } from '../users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import {
   AuthDto,
   ChangePasswordDto,
   ForgetPasswordDto,
 } from './dto/create-auth.dto';
+import { PrismaClient } from '@prisma/client';
 
 const userData = {
   name: 'Akash Sunar',
@@ -158,7 +159,7 @@ describe('AuthsService', () => {
       jest.spyOn(OtpService.prototype, 'verifyOtp').mockReturnValue(true);
       jest
         .spyOn(prisma.user, 'update')
-        .mockResolvedValue({ isEmailVerified: true } as any);
+        .mockResolvedValue({ isEmailVerified: true }as any);
       const result = await service.verifyUser(authUser);
       expect(result).toBe(true);
       expect(otpService.verifyOtp).toHaveBeenCalledWith(
@@ -344,7 +345,7 @@ describe('AuthsService', () => {
       jest
         .spyOn(BcryptPassword.prototype, 'hashPassword')
         .mockResolvedValue('newHashedPassword');
-      jest.spyOn(prisma.user, 'update').mockReturnValue(loggedinUser as any);
+      jest.spyOn(prisma.user, 'update').mockResolvedValue(loggedinUser);
       jest.spyOn(OtpService.prototype, 'verifyOtp').mockReturnValue(true);
       const result = await service.forgetPassword(forgotPasswordPayload);
       expect(result).toBe(true);
