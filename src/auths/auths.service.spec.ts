@@ -12,7 +12,6 @@ import {
   ChangePasswordDto,
   ForgetPasswordDto,
 } from './dto/create-auth.dto';
-import exp from 'constants';
 
 const userData = {
   name: 'Akash Sunar',
@@ -538,7 +537,7 @@ describe('AuthsService', () => {
       jest
         .spyOn(BcryptPassword.prototype, 'comparePassword')
         .mockResolvedValue(false as never);
-      const result =  service.changePassword(changePasswordPayload);
+      const result = service.changePassword(changePasswordPayload);
       await expect(result).rejects.toThrow(
         'Old password you provided is incorrect',
       );
