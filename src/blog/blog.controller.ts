@@ -76,6 +76,7 @@ export class BlogController {
   }
 
   @Delete('delete-blog/:id')
+  @UseGuards(AuthsGuard)
   @ApiOkResponse({ type: BlogEntity })
   @ApiOperation({ summary: 'Delete a particular blog' })
   remove(@Param('id') blogId: number, @Request() req: any) {
