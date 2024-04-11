@@ -65,8 +65,7 @@ describe('BlogService', () => {
   describe('Create a Blog', () => {
     it(' should create a blog and save it', async () => {
       jest.spyOn(prisma.blog, 'create').mockResolvedValue(blogs[0]);
-      // const createdBlog = await service.create(blogData);
-      const createdBlog = await prisma.blog.create({ data: blogs[0] });
+      const createdBlog = await service.create(blogData);
       expect(createdBlog).toEqual(blogs[0]);
       expect(prisma.blog.create).toHaveBeenCalledWith({ data: blogData });
     });
