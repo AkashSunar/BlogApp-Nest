@@ -28,8 +28,8 @@ import {
 import { AuthsService } from './auths.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserEntity } from '../users/entities/user.entity';
 import { AuthEntity } from './entities/auth.entity';
 
 @Controller('auths')

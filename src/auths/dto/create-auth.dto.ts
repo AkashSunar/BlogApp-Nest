@@ -8,7 +8,15 @@ export class CreateAuthDto {
   @IsString()
   password: string;
 }
-
+export class AuthDto {
+  @IsInt()
+  @IsOptional()
+  id: number;
+  @IsString()
+  email: string;
+  @IsInt()
+  otpToken: number;
+}
 export class UserVerifyDto {
   @IsString()
   @IsNotEmpty()

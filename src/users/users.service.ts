@@ -9,7 +9,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private bcrypt: BcryptPassword,
-  ) {}
+  ) { }
   async createUser(
     signUpPayload: CreateUserDto,
   ): Promise<Prisma.UserCreateInput> {
@@ -26,7 +26,7 @@ export class UsersService {
       passwordHash,
       created_by,
     };
-    return await this.prisma.user.create({ data: newUser });
+    return await this.prisma.user.create({ data: newUser});
   }
 
   async getAllUsers() {
